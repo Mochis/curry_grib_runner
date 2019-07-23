@@ -1,7 +1,9 @@
 import threading
 import queue
 import subprocess
-import os
+
+from grib import get_data_lines
+from files import write_binary_to_file
 
 
 class CommandExecutor(threading.Thread):
@@ -24,15 +26,8 @@ class CommandExecutor(threading.Thread):
     def run_bash_command(self, meteo_task_data):
         process = subprocess.Popen(meteo_task_data.get_grib_command().to_string().split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
-        binary_lines = output.split(b"\n")
-        filtered_meteo_lines = binary_lines[1:len(binary_lines) - 11]
-        paths = meteo_task_data.get_out_filename_path().split("/")
-        path = "/" + "/".join(paths[1:len(paths)-1])
-        if not os.path.exists(path):
-            os.makedirs(path)
-        with open(meteo_task_data.get_out_filename_path(), "wb") as file:
-            for meteo_line_data in filtered_meteo_lines:
-                file.write(meteo_line_data + b"\n")
+        filtered_meteo_lines = get_data_lines(output)
+        write_binary_to_file(meteo_task_data.get_out_filename_path(), filtered_meteo_lines)
 
 
 class SharedQueue:
