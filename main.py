@@ -9,7 +9,7 @@ def read_coords_file():
     return stations.STATIONS
 
 
-def work(shared_queue: SharedQueue):
+def send_tasks(shared_queue: SharedQueue):
     for estacion, coords in read_coords_file().items():
         for month in range(1,2):
             for meteo_var in constans.METEO_VARS:
@@ -30,7 +30,7 @@ def work(shared_queue: SharedQueue):
 
 def main():
     shared_queue = SharedQueue()
-    work(shared_queue)
+    send_tasks(shared_queue)
     cpu_cores = multiprocessing.cpu_count()
     for core in range(cpu_cores):
         thread = CommandExecutor("T" + str(core), shared_queue)
