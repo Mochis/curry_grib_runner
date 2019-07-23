@@ -11,7 +11,7 @@ def read_coords_file():
 
 def send_tasks(shared_queue: SharedQueue):
     for estacion, coords in read_coords_file().items():
-        for month in range(1,2):
+        for month in range(1, 12 + 1):
             for meteo_var in constans.METEO_VARS:
                 command = GribCommand(
                     os.path.expanduser(constans.GRIB_BIN_RELATIVE_PATH),
