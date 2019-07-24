@@ -26,7 +26,7 @@ class CommandExecutor(threading.Thread):
     def run_bash_command(self, meteo_task_data):
         process = subprocess.Popen(meteo_task_data.get_grib_command().to_string().split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
-        filtered_meteo_lines = get_data_lines(output)
+        filtered_meteo_lines = get_data_lines(output, 1, 11)
         write_binary_to_file(meteo_task_data.get_out_filename_path(), filtered_meteo_lines)
 
 

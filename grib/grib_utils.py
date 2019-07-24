@@ -1,5 +1,5 @@
 
-def get_data_lines(binary_data):
+def get_data_lines(binary_data, start_at, finish_offset):
     binary_lines = binary_data.split(b"\n")
-    # removing the summary
-    return binary_lines[1:len(binary_lines) - 11]
+    # discard x first lines and removing the summary
+    return binary_lines[start_at:len(binary_lines) - finish_offset]
