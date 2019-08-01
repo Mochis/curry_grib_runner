@@ -63,7 +63,7 @@ class SharedQueue:
 
     def consume_item_queue(self):
         self.queue_lock.acquire()
-        if self.queue.empty():
+        if self.queue.empty(): # empty method does not guarantee that subsequent call to get() will not block
             command = None
         else:
             command = self.queue.get()
