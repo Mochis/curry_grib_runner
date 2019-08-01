@@ -1,7 +1,7 @@
 import threading
 import queue
 import subprocess
-import constants
+import properties
 
 from grib import get_data_lines
 from files import write_binary_to_file
@@ -49,7 +49,7 @@ class CommandExecutor(threading.Thread):
             process = subprocess.Popen(command.to_string().split(), stdout=subprocess.PIPE)
             output, error = process.communicate()
 
-        filtered_meteo_lines = get_data_lines(output, constants.HEADER_LINES_SKIP, constants.TAIL_LINES_SKIP)
+        filtered_meteo_lines = get_data_lines(output, properties.HEADER_LINES_SKIP, properties.TAIL_LINES_SKIP)
         write_binary_to_file(meteo_task_data.get_out_filename_path(), filtered_meteo_lines)
 
 

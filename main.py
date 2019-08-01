@@ -1,4 +1,4 @@
-import constants
+import properties
 import stations
 import multiprocessing
 import os
@@ -13,17 +13,17 @@ def read_coords_file():
 def send_tasks(shared_queue: SharedQueue):
     for estacion, coords in read_coords_file().items():
         params = dict()
-        params["p"] = constants.DEFAULT_PARAMS
+        params["p"] = properties.DEFAULT_PARAMS
         params["l"] = coords
         for month in range(1, 12 + 1):
             command = GribCommand(
-                os.path.expanduser(constants.GRIB_BIN_RELATIVE_PATH),
-                constants.GRIB_LS_COMMAND + " ",
+                os.path.expanduser(properties.GRIB_BIN_RELATIVE_PATH),
+                properties.GRIB_LS_COMMAND + " ",
                 params,
-                " " + os.path.expanduser(constants.PATH_TO_GRIB_FILE) + f"2018{month:02d}_meteo.grib"
+                " " + os.path.expanduser(properties.PATH_TO_GRIB_FILE) + f"2018{month:02d}_meteo.grib"
             )
             out_filename_path = \
-                os.path.expanduser(constants.RELATIVE_PATH) \
+                os.path.expanduser(properties.RELATIVE_PATH) \
                 + estacion + f"/2018{month:02d}" + f"/2018{month:02d}.csv"
             meteo_task_data = MeteoTaskData(command, out_filename_path)
             shared_queue.fill_queue(meteo_task_data)
