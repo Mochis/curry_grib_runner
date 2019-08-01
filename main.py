@@ -1,7 +1,8 @@
-import constants, stations
+import constants
+import stations
 import multiprocessing
 import os
-from concurrent import SharedQueue, CommandExecutor, MeteoTaskData
+from concurrent import SharedQueue, CommandExecutor, MeteoTaskData, Cache
 from grib import GribCommand
 
 
@@ -11,29 +12,30 @@ def read_coords_file():
 
 def send_tasks(shared_queue: SharedQueue):
     for estacion, coords in read_coords_file().items():
+        params = dict()
+        params["p"] = constants.DEFAULT_PARAMS
+        params["l"] = coords
         for month in range(1, 12 + 1):
-            for meteo_var in constants.METEO_VARS:
-                command = GribCommand(
-                    os.path.expanduser(constants.GRIB_BIN_RELATIVE_PATH),
-                    constants.GRIB_LS_COMMAND,
-                    coords,
-                    ",".join(constants.DEFAULT_PARAMS),
-                    "shortName=" + meteo_var,
-                    os.path.expanduser(constants.PATH_TO_GRIB_FILE) + f"2018{month:02d}_meteo.grib"
-                )
-                out_filename_path = \
-                    os.path.expanduser(constants.RELATIVE_PATH) \
-                    + estacion + f"/2018{month:02d}" + f"/2018{month:02d}_" + meteo_var + ".csv"
-                meteo_task_data = MeteoTaskData(command, out_filename_path)
-                shared_queue.fill_queue(meteo_task_data)
+            command = GribCommand(
+                os.path.expanduser(constants.GRIB_BIN_RELATIVE_PATH),
+                constants.GRIB_LS_COMMAND + " ",
+                params,
+                " " + os.path.expanduser(constants.PATH_TO_GRIB_FILE) + f"2018{month:02d}_meteo.grib"
+            )
+            out_filename_path = \
+                os.path.expanduser(constants.RELATIVE_PATH) \
+                + estacion + f"/2018{month:02d}" + f"/2018{month:02d}.csv"
+            meteo_task_data = MeteoTaskData(command, out_filename_path)
+            shared_queue.fill_queue(meteo_task_data)
 
 
 def main():
     shared_queue = SharedQueue()
+    cache = Cache()
     send_tasks(shared_queue)
     cpu_cores = multiprocessing.cpu_count()
     for core in range(cpu_cores):
-        thread = CommandExecutor("T" + str(core), shared_queue)
+        thread = CommandExecutor("T" + str(core), shared_queue, cache)
         thread.start()
 
 
