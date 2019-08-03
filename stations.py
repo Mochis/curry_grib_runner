@@ -4,6 +4,7 @@ STATIONS = {
     "escuelas aguirre":     [40.50, 356.25, 1],
     "ramon y cajal":        [40.50, 356.25, 1],
     "arturo soria":         [40.50, 356.25, 1],
+    "villaverde":           [40.25, 356.25, 1],
     "farolillo":            [40.50, 356.25, 1],
     "casa campo":           [40.50, 356.25, 1],
     "barajas pueblo":       [40.50, 356.50, 1],
